@@ -7,33 +7,49 @@ async def root_route_handler(request):
     return web.json_response("MrSyD")
 
 
+
 from pyrogram import Client
-from pyrogram.raw.functions.messages import GetMessages
+import aiofiles
+import os
 from .screenshotbot import ScreenShotBot
- 
- @routes.get("/file/{chat_id}/{message_id}")
- async def stream_handler(request):
-     chat_id = int(request.match_info["chat_id"])
-     message_id = int(request.match_info["message_id"])
- 
-     # Optional: header auth
-     if request.headers.get("IAM") != Config.IAM_HEADER:
-         return web.Response(text="Unauthorized", status=403)
- 
-     try:
-         message = await ScreenShotBot.get_messages(chat_id, message_id)
- 
-         if not message or not message.media:
-             return web.Response(text="No media in message", status=404)
- 
-         file = message.document or message.video or message.audio
- 
-         if not file:
-             return web.Response(text="Unsupported media type", status=400)
- 
-         # Now you stream this file using its file_id (via Pyrogram's get_file or custom handler)
-         # Placeholder:
-         return web.Response(text="Media exists!", status=200)
- 
-     except Exception as e:
-         return web.Response(text=f"Error: {str(e)}", status=500)
+
+routes = ScreenShotBot
+app = Client("my_bot")  # Your Pyrogram client
+
+@routes.get("/file/{chat_id}/{message_id}")
+async def stream_handler(request):
+    chat_id = int(request.match_info["chat_id"])
+    message_id = int(request.match_info["message_id"])
+
+    if request.headers.get("IAM") != Config.IAM_HEADER:
+        return web.Response(text="Unauthorized", status=403)
+
+    try:
+        message = await app.get_messages(chat_id, message_id)
+        file = message.document or message.video or message.audio
+
+        if not file:
+            return web.Response(text="Unsupported media type", status=400)
+
+        file_path = f"/tmp/{file.file_id}"
+        if not os.path.exists(file_path):
+            await app.download_media(message, file_name=file_path)
+
+        file_stat = os.stat(file_path)
+        headers = {
+            "Content-Type": file.mime_type or "application/octet-stream",
+            "Content-Length": str(file_stat.st_size),
+            "Accept-Ranges": "bytes",
+        }
+
+        async def file_stream():
+            async with aiofiles.open(file_path, "rb") as f:
+                chunk = await f.read(8192)
+                while chunk:
+                    yield chunk
+                    chunk = await f.read(8192)
+
+        return web.Response(body=file_stream(), headers=headers)
+
+    except Exception as e:
+        return web.Response(text=f"Error: {str(e)}", status=500)
