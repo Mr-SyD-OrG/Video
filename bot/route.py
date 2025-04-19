@@ -9,7 +9,7 @@ async def root_route_handler(request):
 
 from pyrogram import Client
 from pyrogram.raw.functions.messages import GetMessages
-
+from .screenshotbot import ScreenShotBot
 
 @routes.get("/file/{chat_id}/{message_id}")
 async def stream_handler(request):
@@ -21,7 +21,7 @@ async def stream_handler(request):
         return web.Response(text="Unauthorized", status=403)
 
     try:
-        message = await app.get_messages(chat_id, message_id)
+        message = await ScreenShotBot.get_messages(chat_id, message_id)
 
         if not message or not message.media:
             return web.Response(text="No media in message", status=404)
