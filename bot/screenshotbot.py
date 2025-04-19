@@ -8,7 +8,8 @@ from contextlib import contextmanager
 
 from pyrogram import Client
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-
+from aiohttp import web
+from .route imporr web_server
 from bot.config import Config
 from bot.workers import Worker
 from bot.utils.broadcast import Broadcast
@@ -36,6 +37,10 @@ class ScreenShotBot(Client):
         await super().start()
         await self.process_pool.start()
         me = await self.get_me()
+        app = web.AppRunner(await web_server())
+        await app.setup()
+        await web.TCPSite(app, "0.0.0.0", 8080).start()
+        print("Web Response Is Running......🕸️")
         print(f"New session started for {me.first_name}({me.username})")
 
     async def stop(self):
