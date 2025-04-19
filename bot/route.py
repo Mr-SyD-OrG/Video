@@ -8,8 +8,8 @@ async def root_route_handler(request):
 
 
 from pyrogram import Client
- from pyrogram.raw.functions.messages import GetMessages
- from .screenshotbot import ScreenShotBot
+from pyrogram.raw.functions.messages import GetMessages
+from .screenshotbot import ScreenShotBot
  
  @routes.get("/file/{chat_id}/{message_id}")
  async def stream_handler(request):
