@@ -13,8 +13,8 @@ import aiofiles
 import os
 from .screenshotbot import ScreenShotBot
 
-routes = ScreenShotBot
-app = Client("my_bot")  # Your Pyrogram client
+
+app = ScreenShotBot  # Your Pyrogram client
 
 @routes.get("/file/{chat_id}/{message_id}")
 async def stream_handler(request):
