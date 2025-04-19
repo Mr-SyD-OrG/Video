@@ -1,3 +1,5 @@
+
+
 import os
 import random
 import asyncio
@@ -74,7 +76,7 @@ class Utilities:
 
     @staticmethod
     def generate_stream_link(media_msg):
-        file_id = media_msg.message_id
+        file_id = media_msg.id
         chat_id = media_msg.chat.id
         return urljoin(Config.HOST, f"file/{chat_id}/{file_id}")
 
