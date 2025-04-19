@@ -9,7 +9,7 @@ from contextlib import contextmanager
 from pyrogram import Client
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiohttp import web
-from .route imporr web_server
+from .route import web_server
 from bot.config import Config
 from bot.workers import Worker
 from bot.utils.broadcast import Broadcast
