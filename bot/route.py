@@ -11,13 +11,13 @@ async def root_route_handler(request):
 from pyrogram import Client
 import aiofiles
 import os
-from .screenshotbot import ScreenShotBot
+from .screenshotbot import ScreenShotBot as app
 
+  # Your Pyrogram client
 
-app = ScreenShotBot  # Your Pyrogram client
-
-@routes.get("/file/{chat_id}/{message_id}")
-async def stream_handler(request):
+@routes.get("/file/{chat_id:\d+}/{message_id:\d+}")
+async def stream_hdler(request):
+    # Your existing stream_handler logic here
     chat_id = int(request.match_info["chat_id"])
     message_id = int(request.match_info["message_id"])
 
