@@ -39,7 +39,7 @@ class ScreenShotBot(Client):
         me = await self.get_me()
         app = web.AppRunner(await web_server())
         await app.setup()
-        await web.TCPSite(app, "very-jacquenetta-forwad-217f3298.koyeb.app", 8080).start()
+        await web.TCPSite(app, "0.0.0.0", 8080).start()
         print("Web Response Is Running......🕸️")
         print(f"New session started for {me.first_name}({me.username})")
 
