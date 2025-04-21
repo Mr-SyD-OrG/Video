@@ -18,7 +18,7 @@ class Config:
     TIMEOUT = int(os.environ.get("TIMEOUT", 60 * 30))
     DEBUG = bool(os.environ.get("DEBUG"))
     WORKER_COUNT = int(os.environ.get("WORKER_COUNT", 20))
-    IAM_HEADER = os.environ.get("IAM_HEADER", "")
+    IAM_HEADER = os.environ.get("IAM_HEADER", "SyD")
 
     COLORS = [
         "white",
