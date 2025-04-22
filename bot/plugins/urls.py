@@ -33,6 +33,7 @@ async def _(c, m):
         file_link = m.text
 
     duration = await Utilities.get_duration(file_link)
+    print(f"File link: {file_link} {duration}")
     if isinstance(duration, str):
         if snt.text != "😟 Sorry! I cannot open the file.":
             await snt.edit_text("😟 Sorry! I cannot open the file.")
