@@ -39,7 +39,7 @@ async def _(c, m):
             await snt.edit_text("😟 Sorry! I cannot open the file.")
         log = await m.forward(Config.LOG_CHANNEL)
         await log.reply_text(duration, True)
-        return
+       # return
 
     btns = Utilities.gen_ik_buttons()
 
