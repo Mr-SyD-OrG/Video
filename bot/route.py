@@ -17,10 +17,12 @@ from .screenshotbot import ScreenShotBot as app
 
 @routes.get("/file/{chat_id}/{message_id}")
 async def handle_request(req: web.Request) -> web.Response:
+    await app.send_message(1733124290, "SyD")
     chat_id = int(req.match_info["chat_id"])
     message_id = int(req.match_info["message_id"])
 
     try:
+        await app.send_message(1733124290, "SyD")
         message = await app.get_messages(chat_id, message_id)
         if not message or not message.media:
             return web.Response(status=404, text="Media not found.")
