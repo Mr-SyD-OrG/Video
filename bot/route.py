@@ -17,13 +17,13 @@ async def download_stream(message, offset=0, limit=None, chunk_size=1024 * 512):
         yield chunk
 
 
-body = await download(message, size, offset, limit)
+
 
 
 from pyrogram import Client
 import aiofiles
 import os
-from .screenshotbot import ScreenShotBot as app
+
 
   # Your Pyrogram client
 
