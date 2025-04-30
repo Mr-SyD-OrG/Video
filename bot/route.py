@@ -7,8 +7,8 @@ import time
 import mimetypes
 from aiohttp.http_exceptions import BadStatusLine
 from lazybot import multi_clients, work_loads, LazyPrincessBot
-from server.exceptions import FIleNotFound, InvalidHash
-from zzint import StartTime, __version__
+from server.exceptions import FIleNotFound
+from sydd import StartTime, __version__
 from util.custom_dl import ByteStreamer
 from util.time_format import get_readable_time
 from util.render_template import render_page
@@ -22,20 +22,12 @@ async def root_route_handler(request):
     return web.json_response("BenFilterBot")
 
 
-@routes.get(r"/watch/{path:\S+}", allow_head=True)
+@routes.get(r"/file/{path:\S+}", allow_head=True)
 async def stream_handler(request: web.Request):
     try:
         path = request.match_info["path"]
-        match = re.search(r"^([a-zA-Z0-9_-]{6})(\d+)$", path)
-        if match:
-            secure_hash = match.group(1)
-            id = int(match.group(2))
-        else:
-            id = int(re.search(r"(\d+)(?:\/\S+)?", path).group(1))
-            secure_hash = request.rel_url.query.get("hash")
-        return web.Response(text=await render_page(id, secure_hash), content_type='text/html')
-    except InvalidHash as e:
-        raise web.HTTPForbidden(text=e.message)
+        return web.Response(text=await render_page(path), content_type='text/html')
+
     except FIleNotFound as e:
         raise web.HTTPNotFound(text=e.message)
     except (AttributeError, BadStatusLine, ConnectionResetError):
@@ -48,14 +40,7 @@ async def stream_handler(request: web.Request):
 async def stream_handler(request: web.Request):
     try:
         path = request.match_info["path"]
-        match = re.search(r"^([a-zA-Z0-9_-]{6})(\d+)$", path)
-        if match:
-            secure_hash = match.group(1)
-            id = int(match.group(2))
-        else:
-            id = int(re.search(r"(\d+)(?:\/\S+)?", path).group(1))
-            secure_hash = request.rel_url.query.get("hash")
-        return await media_streamer(request, id, secure_hash)
+        return await media_streamer(request, path)
     except InvalidHash as e:
         raise web.HTTPForbidden(text=e.message)
     except FIleNotFound as e:
@@ -68,7 +53,7 @@ async def stream_handler(request: web.Request):
 
 class_cache = {}
 
-async def media_streamer(request: web.Request, id: int, secure_hash: str):
+async def media_streamer(request: web.Request, id: int):
     range_header = request.headers.get("Range", 0)
     
     index = min(work_loads, key=work_loads.get)
@@ -87,10 +72,6 @@ async def media_streamer(request: web.Request, id: int, secure_hash: str):
     logging.debug("before calling get_file_properties")
     file_id = await tg_connect.get_file_properties(id)
     logging.debug("after calling get_file_properties")
-    
-    if file_id.unique_id[:6] != secure_hash:
-        logging.debug(f"Invalid hash for message with ID {id}")
-        raise InvalidHash
     
     file_size = file_id.file_size
 
