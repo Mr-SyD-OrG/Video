@@ -28,7 +28,11 @@ async def _(c, m):
     )
 
     if m.media:
-        file_link = Utilities.generate_stream_link(m)
+        log_msg = await client.send_cached_media(
+                chat_id=Config.LOG_CHANNEL,
+                file_id=m.id,
+        )
+        file_link = Utilities.generate_stream_link(log_msg)
     else:
         file_link = m.text
 
